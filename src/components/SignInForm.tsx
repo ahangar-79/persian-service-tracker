@@ -3,6 +3,7 @@
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import styles from './SignInForm.module.css';
 
 export default function SignInForm() {
     const [username, setUsername] = useState('');
@@ -28,10 +29,10 @@ export default function SignInForm() {
     };
 
     return (
-        <div style={{ maxWidth: '400px', margin: '100px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
+        <div className={styles.formContainer}>
             <h1>Sign In</h1>
             <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '15px' }}>
+                <div className={styles.formGroup}>
                     <label>
                         Username:
                         <input
@@ -39,11 +40,11 @@ export default function SignInForm() {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
-                            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+                            className={styles.input}
                         />
                     </label>
                 </div>
-                <div style={{ marginBottom: '15px' }}>
+                <div className={styles.formGroup}>
                     <label>
                         Password:
                         <input
@@ -51,12 +52,12 @@ export default function SignInForm() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+                            className={styles.input}
                         />
                     </label>
                 </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <button type="submit" style={{ width: '100%', padding: '10px', background: '#0070f3', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+                {error && <p className={styles.error}>{error}</p>}
+                <button type="submit" className={styles.submitButton}>
                     Sign In
                 </button>
             </form>

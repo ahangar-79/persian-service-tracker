@@ -1,15 +1,16 @@
 "use client";
 
 import { signOut } from 'next-auth/react';
+import styles from './SignOut.module.css';
 
 export default function SignOut() {
     return (
-        <div style={{ textAlign: 'center', marginTop: '100px' }}>
+        <div className={styles.container}>
             <h1>Sign Out</h1>
             <p>Are you sure you want to sign out?</p>
             <button
                 onClick={() => signOut({ callbackUrl: '/auth/signIn' })}
-                style={{ padding: '10px 20px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', marginTop: '20px' }}
+                className={styles.signOutButton}
             >
                 Sign Out
             </button>

@@ -145,7 +145,7 @@ export default function Dashboard() {
             <div className={styles.topSection}>
                 <div className={styles.chartContainer}>
                     <div className={styles.chartTitle}>درخواست ها در طول زمان</div>
-                    <div style={{ height: '300px' }}>
+                    <div className={styles.lineChartContainer}>
                         <Line data={chartData} options={chartOptions} />
                     </div>
                 </div>
