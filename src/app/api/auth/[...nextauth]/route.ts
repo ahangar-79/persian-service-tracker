@@ -13,11 +13,11 @@ const handler = NextAuth({
         // This is where you'd typically look up the user from a database.
         // For now, we'll just check against the hardcoded credentials.
         if (
-          credentials?.username === "@li-ahangar11" &&
+          credentials?.username === "ali-ahangar" &&
           credentials?.password === "12Test#pro"
         ) {
           // Any object returned will be saved in `user` property of the JWT
-          return { id: "1", name: "@li-ahangar11", email: "" };
+          return { id: "1", name: "ali-ahangar", email: "" };
         } else {
           // If you return null then an error will be displayed advising the user to check their details.
           return null;
