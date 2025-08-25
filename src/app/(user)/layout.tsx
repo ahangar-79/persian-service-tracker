@@ -2,6 +2,7 @@
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";
+import Navbar from "@/components/Navbar";
 
 export default function UserLayout({ children }: { children: ReactNode }) {
     const { data: session, status } = useSession();
@@ -16,8 +17,7 @@ export default function UserLayout({ children }: { children: ReactNode }) {
 
     return (
         <div>
-            {/* <h1>User Layout (Dashboard)</h1> */}
-            {/* Sidebar and Navbar would go here */}
+            <Navbar />
             <main>{children}</main>
         </div>
     );
