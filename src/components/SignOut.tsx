@@ -5,7 +5,7 @@ import styles from './SignOut.module.css';
 
 export default function SignOut() {
     return (
-        <div className={styles.container}>
+        <div className={styles.signOutContainer}>
             <h1>Sign Out</h1>
             <p>Are you sure you want to sign out?</p>
             <button

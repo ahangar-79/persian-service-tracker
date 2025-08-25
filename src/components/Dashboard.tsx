@@ -145,7 +145,7 @@ export default function Dashboard() {
             <div className={styles.topSection}>
                 <div className={styles.chartContainer}>
                     <div className={styles.chartTitle}>درخواست ها در طول زمان</div>
-                    <div className={styles.lineChartContainer}>
+                    <div style={{ height: '300px' }}>
                         <Line data={chartData} options={chartOptions} />
                     </div>
                 </div>
@@ -155,10 +155,6 @@ export default function Dashboard() {
                 <div className={styles.tableContainer}>
                     <div className={styles.tableHeader}>
                         <div className={styles.chartTitle}>لیست کاربران</div>
-                        <button className={styles.addButton}>
-                            <span>+</span>
-                            ایجاد کاربر
-                        </button>
                     </div>
 
                     <div className={styles.tableControls}>

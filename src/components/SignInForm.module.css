@@ -1,9 +1,15 @@
 .formContainer {
+  --border-color: #ccc;
+  --primary-color: #0070f3;
+  --error-color: red;
+  --border-radius-sm: 5px;
+  --border-radius-md: 8px;
+
   max-width: 400px;
   margin: 100px auto;
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
 }
 
 .formGroup {
@@ -16,16 +22,16 @@
   margin-top: 5px;
 }
 
-.error {
-  color: red;
+.errorMessage {
+  color: var(--error-color);
 }
 
 .submitButton {
   width: 100%;
   padding: 10px;
-  background: #0070f3;
+  background: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
 }

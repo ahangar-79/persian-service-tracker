@@ -29,10 +29,6 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.lineChartContainer {
-  height: 300px;
-}
-
 .chartTitle {
   font-size: 18px;
   font-weight: 600;

@@ -56,7 +56,7 @@ export default function SignInForm() {
                         />
                     </label>
                 </div>
-                {error && <p className={styles.error}>{error}</p>}
+                {error && <p className={styles.errorMessage}>{error}</p>}
                 <button type="submit" className={styles.submitButton}>
                     Sign In
                 </button>
