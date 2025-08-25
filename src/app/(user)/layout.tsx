@@ -17,9 +17,11 @@ export default function UserLayout({ children }: { children: ReactNode }) {
     }
 
     return (
-        <div>
+        <div className="min-h-screen bg-gray-50">
             <Navbar />
-            <main>{children}</main>
+            <main className="container mx-auto px-4 py-6">
+                {children}
+            </main>
         </div>
     );
 }
