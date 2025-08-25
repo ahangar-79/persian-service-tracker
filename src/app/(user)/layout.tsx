@@ -3,12 +3,13 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";
 import Navbar from "@/components/Navbar";
+import Spinner from "@/components/Spinner";
 
 export default function UserLayout({ children }: { children: ReactNode }) {
     const { data: session, status } = useSession();
 
     if (status === "loading") {
-        return <div>Loading...</div>; // Or a spinner component
+        return <Spinner />;
     }
 
     if (!session) {
