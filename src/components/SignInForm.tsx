@@ -53,6 +53,39 @@ export default function SignInForm() {
         }
     };
 
+    // Handle field blur for validation
+    const handleFieldBlur = (field: 'username' | 'password') => () => {
+        const value = formData[field];
+
+        if (!value || value.trim() === '') {
+            setErrors(prev => ({
+                ...prev,
+                [field]: field === 'username' ? 'لطفاً نام کاربری خود را وارد کنید' : 'لطفاً رمز عبور خود را وارد کنید'
+            }));
+        } else {
+            // Validate specific field
+            try {
+                if (field === 'username') {
+                    if (value.length < 3) {
+                        setErrors(prev => ({ ...prev, username: 'نام کاربری باید حداقل ۳ کاراکتر باشد' }));
+                    } else if (!/^[a-zA-Z0-9._-]+$/.test(value)) {
+                        setErrors(prev => ({ ...prev, username: 'نام کاربری فقط می‌تواند شامل حروف، اعداد، نقطه، خط تیره و زیرخط باشد' }));
+                    } else {
+                        setErrors(prev => ({ ...prev, username: undefined }));
+                    }
+                } else if (field === 'password') {
+                    if (value.length < 4) {
+                        setErrors(prev => ({ ...prev, password: 'رمز عبور باید حداقل ۴ کاراکتر باشد' }));
+                    } else {
+                        setErrors(prev => ({ ...prev, password: undefined }));
+                    }
+                }
+            } catch (error) {
+                console.error('Validation error:', error);
+            }
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -64,11 +97,28 @@ export default function SignInForm() {
         setErrors({});
 
         try {
-            // Client-side validation
+            // Manual validation for empty fields
+            const fieldErrors: ValidationErrors = {};
+
+            if (!formData.username || formData.username.trim() === '') {
+                fieldErrors.username = 'لطفاً نام کاربری خود را وارد کنید';
+            }
+
+            if (!formData.password || formData.password.trim() === '') {
+                fieldErrors.password = 'لطفاً رمز عبور خود را وارد کنید';
+            }
+
+            // If we have empty field errors, show them
+            if (Object.keys(fieldErrors).length > 0) {
+                setErrors(fieldErrors);
+                setIsLoading(false);
+                return;
+            }
+
+            // Advanced validation with Zod
             const validation = validateLoginForm(formData);
 
             if (!validation.success) {
-                const fieldErrors: ValidationErrors = {};
                 validation.errors.issues.forEach(issue => {
                     const field = issue.path[0] as keyof ValidationErrors;
                     if (field && (field === 'username' || field === 'password')) {
@@ -96,20 +146,54 @@ export default function SignInForm() {
                     setIsLocked(true);
                     setLockoutTime(15 * 60); // 15 minutes
                     setErrors({
-                        general: 'تعداد تلاش‌های نامعتبر زیاد است. لطفاً ۱۵ دقیقه صبر کنید.'
+                        general: 'تعداد تلاش‌های نامعتبر زیاد است. حساب شما برای ۱۵ دقیقه قفل شده است.'
                     });
                 } else {
-                    let errorMessage = 'نام کاربری یا رمز عبور اشتباه است';
+                    let errorMessage = '';
+                    let fieldErrors: ValidationErrors = {};
 
-                    if (result.error === 'CredentialsSignin') {
-                        errorMessage = 'اطلاعات ورود نامعتبر است';
+                    // Handle specific errors from backend
+                    if (result.error === 'INVALID_USERNAME') {
+                        fieldErrors.username = 'نام کاربری اشتباه است';
+                    } else if (result.error === 'INVALID_PASSWORD') {
+                        fieldErrors.password = 'رمز عبور اشتباه است';
+                    } else if (result.error === 'INVALID_USERNAME_LENGTH') {
+                        fieldErrors.username = 'نام کاربری باید حداقل ۳ کاراکتر باشد';
+                    } else if (result.error === 'INVALID_PASSWORD_LENGTH') {
+                        fieldErrors.password = 'رمز عبور باید حداقل ۴ کاراکتر باشد';
+                    } else if (result.error === 'MISSING_CREDENTIALS') {
+                        errorMessage = 'لطفاً تمام فیلدها را پر کنید';
+                    } else if (result.error === 'SYSTEM_ERROR') {
+                        errorMessage = 'خطای سیستم. لطفاً دوباره تلاش کنید';
+                    } else if (result.error === 'CredentialsSignin') {
+                        errorMessage = 'اطلاعات ورود نامعتبر است. لطفاً دوباره تلاش کنید';
                     } else if (result.error === 'AccessDenied') {
-                        errorMessage = 'دسترسی شما محدود شده است';
+                        errorMessage = 'دسترسی شما به این حساب محدود شده است';
+                    } else if (result.error === 'Configuration') {
+                        errorMessage = 'خطا در تنظیمات سیستم. لطفاً با پشتیبانی تماس بگیرید';
+                    } else {
+                        errorMessage = 'خطا در ورود به سیستم. لطفاً دوباره تلاش کنید';
                     }
 
-                    setErrors({
-                        general: `${errorMessage} (${5 - newAttemptCount} تلاش باقی‌مانده)`
-                    });
+                    const remainingAttempts = 5 - newAttemptCount;
+
+                    // If we have field-specific errors, show them
+                    if (Object.keys(fieldErrors).length > 0) {
+                        // Add remaining attempts to field errors
+                        if (fieldErrors.username) {
+                            fieldErrors.username += remainingAttempts > 0 ? ` (${remainingAttempts} تلاش باقی‌مانده)` : '';
+                        }
+                        if (fieldErrors.password) {
+                            fieldErrors.password += remainingAttempts > 0 ? ` (${remainingAttempts} تلاش باقی‌مانده)` : '';
+                        }
+                        setErrors(fieldErrors);
+                    } else {
+                        // Show general error
+                        const finalMessage = remainingAttempts > 0
+                            ? `${errorMessage} (${remainingAttempts} تلاش باقی‌مانده)`
+                            : errorMessage;
+                        setErrors({ general: finalMessage });
+                    }
                 }
             } else if (result?.ok) {
                 // Success - reset attempts and redirect
@@ -143,8 +227,8 @@ export default function SignInForm() {
                             type="text"
                             value={formData.username}
                             onChange={handleInputChange('username')}
+                            onBlur={handleFieldBlur('username')}
                             disabled={isLoading || isLocked}
-                            required
                             className={`${styles.input} ${errors.username ? styles.inputError : ''}`}
                             placeholder="نام کاربری خود را وارد کنید"
                             autoComplete="username"
@@ -163,8 +247,8 @@ export default function SignInForm() {
                             type="password"
                             value={formData.password}
                             onChange={handleInputChange('password')}
+                            onBlur={handleFieldBlur('password')}
                             disabled={isLoading || isLocked}
-                            required
                             className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
                             placeholder="رمز عبور خود را وارد کنید"
                             autoComplete="current-password"
@@ -190,7 +274,7 @@ export default function SignInForm() {
                 <button
                     type="submit"
                     className={`${styles.submitButton} ${(isLoading || isLocked) ? styles.submitButtonDisabled : ''}`}
-                    disabled={isLoading || isLocked || !formData.username || !formData.password}
+                    disabled={isLoading || isLocked}
                 >
                     {isLoading ? (
                         <span>
